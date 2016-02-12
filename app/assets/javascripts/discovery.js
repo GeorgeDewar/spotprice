@@ -1,46 +1,28 @@
 var ndx;
-var priceByTimeDimension;
-var priceByTimeGroup;
-
-var avgAdd = function (p, v) {
-  ++p.count;
-  p.total += v.Price;
-  p.avg = p.total / p.count;
-  return p;
-}
-
-var avgRemove = function (p, v) {
-  --p.count;
-  p.total -= v.Price;
-  p.avg = p.count ? p.total / p.count : 0;
-  return p;
-}
-
-var avgInitial = function () {
-  return {count: 0, total: 0, avg: 0};
-}
+var dimensions = {};
+var groups = {};
 
 $(function(){
   d3.csv("/TKR0331.csv", function(data) {
     data.forEach(function(d){
-      d.Trading_period = (+d.Trading_period - 1) / 2;
-      d.Price = +d.Price;
-      d.Trading_date = new Date(d.Trading_date);
+      d.hour = (+d.Trading_period - 1) / 2;
+      d.price = +d.Price;
+      d.date = new Date(d.Trading_date);
     });
 
     console.log(data)
 
     ndx = crossfilter(data);
 
-    priceByTimeDimension = ndx.dimension(function(d) {
-      return d.Trading_period;
+    dimensions.hour = ndx.dimension(function(d) {
+      return d.hour;
     });
-    priceByTimeGroup = priceByTimeDimension.group().reduce(avgAdd, avgRemove, avgInitial);
+    groups.hour = average(dimensions.hour, 'price');
 
-    priceByDomDimension = ndx.dimension(function(d) {
-      return d.Trading_date;
+    dimensions.date = ndx.dimension(function(d) {
+      return d.date;
     });
-    priceByDomGroup = priceByDomDimension.group().reduce(avgAdd, avgRemove, avgInitial);
+    groups.date = average(dimensions.date, 'price');
 
     var priceByTimeChart = dc.lineChart('#price_by_time_chart')
       .width(768)
@@ -50,8 +32,8 @@ $(function(){
       .brushOn(true)
       .yAxisLabel("Price ($/GWh)")
       .elasticY(true)
-      .dimension(priceByTimeDimension)
-      .group(priceByTimeGroup)
+      .dimension(dimensions.hour)
+      .group(groups.hour)
       .valueAccessor(function(d){
         return d.value.avg;
       });
@@ -65,9 +47,9 @@ $(function(){
       .renderArea(true)
       .brushOn(true)
       .yAxisLabel("Price ($/GWh)")
-      //.elasticY(true)
-      .dimension(priceByDomDimension)
-      .group(priceByDomGroup)
+      .elasticY(true)
+      .dimension(dimensions.date)
+      .group(groups.date)
       .valueAccessor(function(d){
         return d.value.avg;
       });
