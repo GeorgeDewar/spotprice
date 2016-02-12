@@ -1,6 +1,7 @@
 var ndx;
 var dimensions = {};
 var groups = {};
+var charts = {};
 
 $(function(){
   d3.csv("/TKR0331.csv", function(data) {
@@ -9,8 +10,6 @@ $(function(){
       d.price = +d.Price;
       d.date = new Date(d.Trading_date);
     });
-
-    console.log(data)
 
     ndx = crossfilter(data);
 
@@ -24,12 +23,19 @@ $(function(){
     });
     groups.date = average(dimensions.date, 'price');
 
-    var priceByTimeChart = dc.lineChart('#price_by_time_chart')
-      .width(768)
+    dimensions.day_of_week = ndx.dimension(function (d) {
+      var day = d.date.getDay();
+      var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return day + '. ' + name[day];
+    });
+    groups.day_of_week = average(dimensions.day_of_week, 'price');
+
+    charts.time = dc.lineChart('#price_by_time_chart')
       .height(480)
       .x(d3.scale.linear().domain([0,23.5]))
       .renderArea(true)
       .brushOn(true)
+      .xAxisLabel("Time of day")
       .yAxisLabel("Price ($/GWh)")
       .elasticY(true)
       .dimension(dimensions.hour)
@@ -37,15 +43,15 @@ $(function(){
       .valueAccessor(function(d){
         return d.value.avg;
       });
-    priceByTimeChart.width($('#price_by_time_chart').width())
+    charts.time.width($('#price_by_time_chart').width())
 
-    var priceByDomChart = dc.lineChart('#price_by_dom_chart')
-      .width(768)
+    charts.date = dc.lineChart('#price_by_dom_chart')
       .height(200)
       .x(d3.time.scale().domain([new Date(2016,0,1), new Date(2016,1,0)]))
       .round(d3.time.day.round)
       .renderArea(true)
       .brushOn(true)
+      .xAxisLabel("Day of month")
       .yAxisLabel("Price ($/GWh)")
       .elasticY(true)
       .dimension(dimensions.date)
@@ -53,11 +59,18 @@ $(function(){
       .valueAccessor(function(d){
         return d.value.avg;
       });
-    priceByDomChart.width($('#price_by_dom_chart').width())
+    charts.date.width($('#price_by_dom_chart').width())
+
+    charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
+      .height(400)
+      .width($('#price_by_day_of_week_chart').width())
+      .dimension(dimensions.day_of_week)
+      .group(groups.day_of_week)
+      .valueAccessor(function(d){
+        return d.value.avg;
+      });
 
 
     dc.renderAll();
-
-
   });
 });

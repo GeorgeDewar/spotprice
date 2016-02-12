@@ -1,9 +1,14 @@
-<div class="container">
+<div class="container-fluid">
+  <h1>Average electricity spot prices in January 2016 (at Takapu Road node)</h1>
   <div class="row">
-    <div class="col-md-12">
-      <h1>Average daily spot prices in January 2016</h1>
-      <div id="price_by_time_chart" style="width: 100%;"></div>
-      <div id="price_by_dom_chart" style="width: 100%;"></div>
+    <div class="col-md-9">
+      <div id="price_by_time_chart" class="chart"></div>
+      <div id="price_by_dom_chart" class="chart"></div>
+    </div>
+    <div class="col-md-3">
+      <div id="price_by_day_of_week_chart" class="chart">
+        <legend>Day of week</legend>
+      </div>
     </div>
   </div>
 </div>
