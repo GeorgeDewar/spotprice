@@ -4,11 +4,11 @@ var groups = {};
 var charts = {};
 
 $(function(){
-  d3.csv("/TKR0331.csv", function(data) {
+  d3.csv("/data", function(data) {
     data.forEach(function(d){
-      d.hour = (+d.Trading_period - 1) / 2;
-      d.price = +d.Price;
-      d.date = new Date(d.Trading_date);
+      d.hour = (+d.period - 1) / 2;
+      d.price = +d.price;
+      d.date = new Date(d.date);
     });
 
     ndx = crossfilter(data);
@@ -47,7 +47,7 @@ $(function(){
 
     charts.date = dc.lineChart('#price_by_dom_chart')
       .height(200)
-      .x(d3.time.scale().domain([new Date(2016,0,1), new Date(2016,1,0)]))
+      .x(d3.time.scale().domain([new Date(2015,11,1), new Date(2016,1,0)]))
       .round(d3.time.day.round)
       .renderArea(true)
       .brushOn(true)
