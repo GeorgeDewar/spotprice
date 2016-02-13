@@ -11,17 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160213025133) do
+ActiveRecord::Schema.define(version: 20160213034810) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "nodes", force: :cascade do |t|
     t.string "code",     null: false
-    t.string "name",     null: false
-    t.point  "location", null: false
+    t.string "name"
+    t.point  "location"
   end
 
   add_index "nodes", ["code"], name: "index_nodes_on_code", using: :btree
+
+  create_table "prices", force: :cascade do |t|
+    t.integer "node_id", null: false
+    t.date    "date",    null: false
+    t.integer "period",  null: false
+    t.decimal "price",   null: false
+  end
+
+  add_index "prices", ["node_id", "date", "period"], name: "index_prices_on_node_id_and_date_and_period", unique: true, using: :btree
 
 end

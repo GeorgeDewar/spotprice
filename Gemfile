@@ -4,6 +4,7 @@ gem 'rails'
 gem 'pg'
 gem 'sass-rails'
 gem 'uglifier'
+gem 'activerecord-import'
 
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
