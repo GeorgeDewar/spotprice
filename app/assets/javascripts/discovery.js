@@ -4,7 +4,7 @@ var groups = {};
 var charts = {};
 
 $(function(){
-  d3.csv("/data", function(data) {
+  d3.csv("/data?node=" + NODE, function(data) {
     data.forEach(function(d){
       d.hour = (+d.period - 1) / 2;
       d.price = +d.price;

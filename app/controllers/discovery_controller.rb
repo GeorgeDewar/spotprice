@@ -3,11 +3,11 @@ require "csv"
 class DiscoveryController < ApplicationController
 
   def index
-    node = Node.find_by_code("TKR0331")
+    @node = Node.find_by_code("TKR0331")
   end
 
   def data
-    node = Node.find_by_code("TKR0331")
+    node = Node.find_by_code!(params[:node])
     prices = ActiveRecord::Base.connection.select_all <<-SQL
     select date, period, price from prices where node_id = #{node.id}
     SQL
