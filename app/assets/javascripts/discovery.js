@@ -31,7 +31,7 @@ $(function(){
     groups.day_of_week = average(dimensions.day_of_week, 'price');
 
     charts.time = dc.lineChart('#price_by_time_chart')
-      .height(480)
+      .height(400)
       .x(d3.scale.linear().domain([0,23.5]))
       .renderArea(true)
       .brushOn(true)
@@ -46,8 +46,8 @@ $(function(){
     charts.time.width($('#price_by_time_chart').width())
 
     charts.date = dc.lineChart('#price_by_dom_chart')
-      .height(200)
-      .x(d3.time.scale().domain([new Date(2015,11,1), new Date(2016,1,0)]))
+      .height(160)
+      .x(d3.time.scale().domain([new Date(2015,1,1), new Date(2016,1,0)]))
       .round(d3.time.day.round)
       .renderArea(true)
       .brushOn(true)
