@@ -62,13 +62,19 @@ $(function(){
     charts.date.width($('#price_by_dom_chart').width())
 
     charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
-      .height(400)
+      .height(250)
       .width($('#price_by_day_of_week_chart').width())
       .dimension(dimensions.day_of_week)
       .group(groups.day_of_week)
       .valueAccessor(function(d){
         return d.value.avg;
+      })
+      .transitionDuration(0);
+      charts.day_of_week.renderlet(function(chart) {
+      chart.selectAll("g.row rect").attr("fill", function (d) {
+        return "#337AB7";
       });
+    });
 
 
     dc.renderAll();
