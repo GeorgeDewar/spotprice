@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160213034810) do
+ActiveRecord::Schema.define(version: 20160215072813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(version: 20160213034810) do
     t.decimal "price",   null: false
   end
 
+  add_index "prices", ["date"], name: "index_prices_on_date", using: :btree
   add_index "prices", ["node_id", "date", "period"], name: "index_prices_on_node_id_and_date_and_period", unique: true, using: :btree
 
 end

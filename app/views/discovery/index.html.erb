@@ -23,7 +23,7 @@
 <div class="container-fluid">
   <p class="subheading">Showing data for
     <%= link_to (@node.name || @node.code), "#", id: "gxp-select", data: { toggle: "modal", target: "gxp-modal" } %>
-    grid exit point for December 2015 to January 2016.</p>
+    grid exit point from <%= @from.strftime("%B %Y") %> to <%= @to.strftime("%B %Y") %>.</p>
   <div class="row">
     <div class="col-md-9">
       <div id="price_by_time_chart" class="chart"></div>
@@ -50,7 +50,7 @@
             the case of generation). Spot prices vary slightly between grid exit points, especially when they are in
             different parts of the country. Some improvements are coming soon that will make it easy to find your
             grid exit point, but in the meantime if you are not sure, just go with the default option.</p>
-          
+
           <p>Use the dropdown below to select a grid exit point.</p>
           <select id="gxp-dropdown" name="node">
             <% @nodes.each do |node| %>
