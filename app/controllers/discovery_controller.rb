@@ -25,4 +25,7 @@ class DiscoveryController < ApplicationController
     end)
   end
 
+  def about
+  end
+
 end
