@@ -14,4 +14,5 @@
 //= require d3
 //= require crossfilter
 //= require dcjs
+//= require bootstrap
 //= require_tree .

@@ -73,4 +73,12 @@ $(function(){
 
     dc.renderAll();
   });
+
+  $('#gxp-select').click(function(){
+    $('#gxp-modal').modal('show');
+  });
+
+  $('#gxp-dropdown').change(function(){
+    //$('form').submit();
+  });
 });

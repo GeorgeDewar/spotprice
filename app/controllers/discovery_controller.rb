@@ -3,7 +3,10 @@ require "csv"
 class DiscoveryController < ApplicationController
 
   def index
-    @node = Node.find_by_code("TKR0331")
+    redirect_to root_path(node: "CPK0331") unless params[:node]
+
+    @nodes = Node.all
+    @node = Node.find_by_code(params[:node])
   end
 
   def data

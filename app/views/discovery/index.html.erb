@@ -1,6 +1,29 @@
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Average electricity spot prices in New Zealand</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Interactive visualisation <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 <div class="container-fluid">
-  <h1>Average electricity spot prices in New Zealand</h1>
-  <p class="subheading">Showing data for <%= @node.name || @node.code %> grid exit point for December 2015 to January 2016.</p>
+  <p class="subheading">Showing data for
+    <%= link_to (@node.name || @node.code), "#", id: "gxp-select", data: { toggle: "modal", target: "gxp-modal" } %>
+    grid exit point for December 2015 to January 2016.</p>
   <div class="row">
     <div class="col-md-9">
       <div id="price_by_time_chart" class="chart"></div>
@@ -11,6 +34,32 @@
         <legend>Day of week</legend>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="gxp-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="get" action="">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Select grid exit point</h4>
+        </div>
+        <div class="modal-body">
+          <p>Use the dropdown below to select a grid exit point.</p>
+          <select id="gxp-dropdown" name="node">
+            <% @nodes.each do |node| %>
+              <option value="<%= node.code %>"><%= node.name ? "#{node.name} (#{node.code})" : node.code %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">OK</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+
   </div>
 </div>
 
