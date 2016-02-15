@@ -46,6 +46,11 @@
           <h4 class="modal-title">Select grid exit point</h4>
         </div>
         <div class="modal-body">
+          <p>The electricity market is divided into over 100 nodes known as grid exit points (or grid input points in
+            the case of generation). Spot prices vary slightly between grid exit points, especially when they are in
+            different parts of the country. Some improvements are coming soon that will make it easy to find your
+            grid exit point, but in the meantime if you are not sure, just go with the default option.</p>
+          
           <p>Use the dropdown below to select a grid exit point.</p>
           <select id="gxp-dropdown" name="node">
             <% @nodes.each do |node| %>
