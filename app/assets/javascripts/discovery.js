@@ -47,6 +47,7 @@ $(function(){
 
     charts.date = dc.lineChart('#price_by_dom_chart')
       .height(160)
+      .width($('#price_by_dom_chart').width())
       .x(d3.time.scale().domain([new Date(2015,1,1), new Date(2016,1,0)]))
       .round(d3.time.day.round)
       .renderArea(true)
@@ -58,8 +59,8 @@ $(function(){
       .group(groups.date)
       .valueAccessor(function(d){
         return d.value.avg;
-      });
-    charts.date.width($('#price_by_dom_chart').width())
+      })
+      .xAxis().ticks($('#price_by_dom_chart').width() / 95);
 
     charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
       .height(250)
