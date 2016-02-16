@@ -1,7 +1,9 @@
 <div class="container-fluid">
   <p class="subheading">Showing data for
     <%= link_to (@node.name || @node.code), "#", id: "gxp-select", data: { toggle: "modal", target: "gxp-modal" } %>
-    grid exit point from <%= @from.strftime("%B %Y") %> to <%= @to.strftime("%B %Y") %>.</p>
+    grid exit point from <%= @from.strftime("%B %Y") %> to <%= @to.strftime("%B %Y") %>. Click and drag to filter the
+    charts below, or click to select days of the week.
+  </p>
   <div class="row">
     <div class="col-md-9">
       <div id="price_by_time_chart" class="chart"></div>
