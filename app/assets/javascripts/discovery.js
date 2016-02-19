@@ -16,12 +16,12 @@ $(function(){
     dimensions.hour = ndx.dimension(function(d) {
       return d.hour;
     });
-    groups.hour = average(dimensions.hour, 'price');
+    groups.hour = reductio().min(function(d) { return d.price; })(dimensions.hour.group());
 
     dimensions.date = ndx.dimension(function(d) {
       return d.date;
     });
-    groups.date = average(dimensions.date, 'price');
+    groups.date = reductio().min(function(d) { return d.price; })(dimensions.date.group());
 
     dimensions.day_of_week = ndx.dimension(function (d) {
       var day = d.date.getDay();
@@ -41,7 +41,7 @@ $(function(){
       .dimension(dimensions.hour)
       .group(groups.hour)
       .valueAccessor(function(d){
-        return d.value.avg;
+        return d.value.min;
       });
     charts.time.width($('#price_by_time_chart').width())
 
@@ -58,7 +58,7 @@ $(function(){
       .dimension(dimensions.date)
       .group(groups.date)
       .valueAccessor(function(d){
-        return d.value.avg;
+        return d.value.min;
       })
       .xAxis().ticks($('#price_by_dom_chart').width() / 95);
 
