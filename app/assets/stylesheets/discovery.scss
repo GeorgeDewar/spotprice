@@ -1,3 +1,25 @@
 .chart {
   width: 100%;
 }
+
+#price_by_time_chart {
+  g.stack._0 {
+    .area {
+      fill: none;
+    }
+  }
+
+  g.stack._1 {
+    .line {
+      stroke: #1f77b4;
+    }
+  }
+
+  g.stack._0 .line, g.stack._2 .line {
+    stroke: #eee;
+  }
+
+  g.stack._1 .area, g.stack._2 .area {
+    fill: #ccc;
+  }
+}
