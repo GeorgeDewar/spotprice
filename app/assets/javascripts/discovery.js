@@ -25,14 +25,18 @@ $(function(){
     dimensions.date = ndx.dimension(function(d) {
       return d.date;
     });
-    groups.date = reductio().avg(function(d) { return d.price; })(dimensions.date.group());
+    groups.date = reductio()
+      .min(function(d) { return d.price; })
+      .max(function(d) { return d.price; })
+      .avg(function(d) { return d.price; })
+      .std(function(d) { return d.price; })(dimensions.date.group());
 
     dimensions.day_of_week = ndx.dimension(function (d) {
       var day = d.date.getDay();
       var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       return day + '. ' + name[day];
     });
-    groups.day_of_week = average(dimensions.day_of_week, 'price');
+    groups.day_of_week = reductio().avg(function(d) { return d.price; })(dimensions.day_of_week.group());
 
     charts.time = dc.lineChart('#price_by_time_chart')
       .height(400)
@@ -45,14 +49,14 @@ $(function(){
       .dimension(dimensions.hour)
       .group(groups.hour)
       .valueAccessor(function(d){
-        return d.value.avg - d.value.std;
+        return d.value.min;
       });
     charts.time.stack(groups.hour, function(d) {
-      return d.value.std;
+      return d.value.avg - d.value.min;
     }).stack(groups.hour, function(d) {
-      return d.value.std;
+      return d.value.max - d.value.avg;
     });
-    charts.time.width($('#price_by_time_chart').width())
+    charts.time.width($('#price_by_time_chart').width());
 
     charts.date = dc.lineChart('#price_by_dom_chart')
       .height(160)
@@ -67,9 +71,14 @@ $(function(){
       .dimension(dimensions.date)
       .group(groups.date)
       .valueAccessor(function(d){
-        return d.value.avg;
-      })
-      .xAxis().ticks($('#price_by_dom_chart').width() / 95);
+        return d.value.min;
+      });
+    charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
+    charts.date.stack(groups.date, function(d) {
+      return d.value.avg - d.value.min;
+    }).stack(groups.date, function(d) {
+      return d.value.max - d.value.avg;
+    });
 
     charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
       .height(250)
