@@ -17,7 +17,7 @@ class DiscoveryController < ApplicationController
     max_date = Price.maximum(:date)
     csv = Rails.cache.fetch("prices/#{node.code}/#{max_date}/csv") do
       prices = ActiveRecord::Base.connection.select_all <<-SQL
-      select date, period, price from prices where node_id = #{node.id} and date >= '#{max_date - 12.months + 1.day}'
+      select date, period, price from prices where node_id = #{node.id} and date >= '#{max_date - 12.months + 1.day}' and period <= 48
       SQL
       CSV.generate(encoding: "UTF-8") do |csv|
         csv << prices.first.keys
