@@ -94,17 +94,29 @@ $(function(){
   });
 
   function updateDisplayValue() {
+    var timeFilters = [];
+    if(charts.time) {
+      timeFilters = charts.time.filters();
+      charts.time.filterAll();
+      dc.deregisterChart(charts.time);
+    }
+    buildTimeChart();
+
+    var dateFilters = [];
+    if(charts.date) {
+      dateFilters = charts.date.filters();
+      charts.date.filterAll();
+      dc.deregisterChart(charts.date);
+    }
+    buildDateChart();
+
     switch(display_value) {
       case 'average-only':
-        if(charts.time) dc.deregisterChart(charts.time);
-        buildTimeChart();
         charts.time.valueAccessor(function(d){
           return d.value.avg * priceMultiplier();
         });
         $(charts.time.anchor()).removeClass('stacked');
 
-        if(charts.date) dc.deregisterChart(charts.date);
-        buildDateChart();
         charts.date.valueAccessor(function(d){
           return d.value.avg * priceMultiplier();
         });
@@ -112,8 +124,6 @@ $(function(){
 
         break;
       case 'typical-range':
-        if(charts.time) dc.deregisterChart(charts.time);
-        buildTimeChart();
         charts.time.valueAccessor(function(d){
           return (d.value.avg - d.value.std) * priceMultiplier();
         }).stack(groups.hour, function(d) {
@@ -123,8 +133,6 @@ $(function(){
         });
         $(charts.time.anchor()).addClass('stacked');
 
-        if(charts.date) dc.deregisterChart(charts.date);
-        buildDateChart();
         charts.date.valueAccessor(function(d){
           return (d.value.avg - d.value.std) * priceMultiplier();
         }).stack(groups.date, function(d) {
@@ -136,8 +144,6 @@ $(function(){
 
         break;
       case 'min-max':
-        if(charts.time) dc.deregisterChart(charts.time);
-        buildTimeChart();
         charts.time.valueAccessor(function(d){
           return d.value.min * priceMultiplier();
         }).stack(groups.hour, function(d) {
@@ -147,8 +153,6 @@ $(function(){
         });
         $(charts.time.anchor()).addClass('stacked');
 
-        if(charts.date) dc.deregisterChart(charts.date);
-        buildDateChart();
         charts.date.valueAccessor(function(d){
           return d.value.min * priceMultiplier();
         }).stack(groups.date, function(d) {
@@ -160,6 +164,18 @@ $(function(){
 
         break;
     };
+
+    if(timeFilters.length == 1) {
+      charts.time.replaceFilter(new dc.filters.RangedFilter(timeFilters[0][0], timeFilters[0][1]));
+      charts.time.extendBrush();
+    }
+
+    if(dateFilters.length == 1) {
+      charts.date.replaceFilter(new dc.filters.RangedFilter(dateFilters[0][0], dateFilters[0][1]));
+      charts.date.render(); // necessary only for date chart
+      charts.date.extendBrush();
+    }
+
   }
 
   function priceMultiplier() {
