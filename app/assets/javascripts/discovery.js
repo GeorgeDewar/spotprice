@@ -2,7 +2,7 @@ var ndx;
 var dimensions = {};
 var groups = {};
 var charts = {};
-var display_value = 'typical-range';
+var display_value = 'average-only';
 var price_scale = 'dollars-per-mwh';
 
 $(function(){
