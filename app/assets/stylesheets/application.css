@@ -11,7 +11,7 @@
  * file per style scope.
  *
  *= require bootstrap
- *= require dcjs
+ *= require dc
  *= require_tree .
  *= require_self
  */

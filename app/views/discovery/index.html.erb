@@ -6,10 +6,38 @@
   </p>
   <div class="row">
     <div class="col-md-9">
-      <div id="price_by_time_chart" class="chart"></div>
-      <div id="price_by_dom_chart" class="chart"></div>
+      <div id="price_by_time_chart" class="chart stacked"></div>
+      <div id="price_by_dom_chart" class="chart stacked"></div>
     </div>
     <div class="col-md-3">
+      <div id="options-panel">
+        <legend>Options</legend>
+
+        <strong>Data</strong>
+        <div class="radio">
+          <label><input type="radio" name="display_value" value="average-only">
+            Average only</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="display_value" value="typical-range" checked="checked">
+            Show typical range</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="display_value" value="min-max">
+            Show minimum and maximums</label>
+        </div>
+
+        <strong>Pricing</strong>
+        <div class="radio">
+          <label><input type="radio" name="price_scale" value="dollars-per-mwh" checked="checked">
+            Show $/MWh</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="price_scale" value="cents-per-kwh">
+            Show &cent;/kWh</label>
+        </div>
+
+      </div>
       <div id="price_by_day_of_week_chart" class="chart">
         <legend>Day of week</legend>
       </div>

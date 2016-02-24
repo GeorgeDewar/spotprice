@@ -2,6 +2,8 @@ var ndx;
 var dimensions = {};
 var groups = {};
 var charts = {};
+var display_value = 'typical-range';
+var price_scale = 'dollars-per-mwh';
 
 $(function(){
   d3.csv("/data?node=" + NODE, function(data) {
@@ -38,47 +40,25 @@ $(function(){
     });
     groups.day_of_week = reductio().avg(function(d) { return d.price; })(dimensions.day_of_week.group());
 
-    charts.time = dc.lineChart('#price_by_time_chart')
-      .height(400)
-      .x(d3.scale.linear().domain([0,23.5]))
-      .renderArea(true)
-      .brushOn(true)
-      .xAxisLabel("Time of day")
-      .yAxisLabel("Price ($/GWh)")
-      .elasticY(true)
-      .dimension(dimensions.hour)
-      .group(groups.hour)
-      .valueAccessor(function(d){
-        return d.value.min;
-      });
-    charts.time.stack(groups.hour, function(d) {
-      return d.value.avg - d.value.min;
-    }).stack(groups.hour, function(d) {
-      return d.value.max - d.value.avg;
-    });
-    charts.time.width($('#price_by_time_chart').width());
+    //buildTimeChart();
+    //charts.time.valueAccessor(function(d){
+    //    return (d.value.avg - d.value.std) * priceMultiplier();
+    //}).stack(groups.hour, function(d) {
+    //  return d.value.std * priceMultiplier();
+    //}).stack(groups.hour, function(d) {
+    //  return d.value.std * priceMultiplier();
+    //});
+    //
+    //buildDateChart();
+    //charts.date.valueAccessor(function(d){
+    //  return d.value.min * priceMultiplier();
+    //}).stack(groups.date, function(d) {
+    //  return (d.value.avg - d.value.min) * priceMultiplier();
+    //}).stack(groups.date, function(d) {
+    //  return (d.value.max - d.value.avg) * priceMultiplier();
+    //});
 
-    charts.date = dc.lineChart('#price_by_dom_chart')
-      .height(160)
-      .width($('#price_by_dom_chart').width())
-      .x(d3.time.scale().domain([new Date(2015,1,1), new Date(2016,1,0)]))
-      .round(d3.time.day.round)
-      .renderArea(true)
-      .brushOn(true)
-      .xAxisLabel("Date")
-      .yAxisLabel(" ")
-      .elasticY(true)
-      .dimension(dimensions.date)
-      .group(groups.date)
-      .valueAccessor(function(d){
-        return d.value.min;
-      });
-    charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
-    charts.date.stack(groups.date, function(d) {
-      return d.value.avg - d.value.min;
-    }).stack(groups.date, function(d) {
-      return d.value.max - d.value.avg;
-    });
+    updateDisplayValue();
 
     charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
       .height(250)
@@ -95,7 +75,6 @@ $(function(){
       });
     });
 
-
     dc.renderAll();
   });
 
@@ -103,7 +82,122 @@ $(function(){
     $('#gxp-modal').modal('show');
   });
 
-  $('#gxp-dropdown').change(function(){
-    //$('form').submit();
+  $('input[name="display_value"]').change(function(){
+    display_value = $(this).val();
+    updateDisplayValue();
+    dc.renderAll();
   });
+
+  $('input[name="price_scale"]').change(function(){
+    price_scale = $(this).val();
+    dc.redrawAll();
+  });
+
+  function updateDisplayValue() {
+    switch(display_value) {
+      case 'average-only':
+        if(charts.time) dc.deregisterChart(charts.time);
+        buildTimeChart();
+        charts.time.valueAccessor(function(d){
+          return d.value.avg * priceMultiplier();
+        });
+        $(charts.time.anchor()).removeClass('stacked');
+
+        if(charts.date) dc.deregisterChart(charts.date);
+        buildDateChart();
+        charts.date.valueAccessor(function(d){
+          return d.value.avg * priceMultiplier();
+        });
+        $(charts.date.anchor()).removeClass('stacked');
+
+        break;
+      case 'typical-range':
+        if(charts.time) dc.deregisterChart(charts.time);
+        buildTimeChart();
+        charts.time.valueAccessor(function(d){
+          return (d.value.avg - d.value.std) * priceMultiplier();
+        }).stack(groups.hour, function(d) {
+          return d.value.std * priceMultiplier();
+        }).stack(groups.hour, function(d) {
+          return d.value.std * priceMultiplier();
+        });
+        $(charts.time.anchor()).addClass('stacked');
+
+        if(charts.date) dc.deregisterChart(charts.date);
+        buildDateChart();
+        charts.date.valueAccessor(function(d){
+          return (d.value.avg - d.value.std) * priceMultiplier();
+        }).stack(groups.date, function(d) {
+          return d.value.std * priceMultiplier();
+        }).stack(groups.date, function(d) {
+          return d.value.std * priceMultiplier();
+        });
+        $(charts.date.anchor()).addClass('stacked');
+
+        break;
+      case 'min-max':
+        if(charts.time) dc.deregisterChart(charts.time);
+        buildTimeChart();
+        charts.time.valueAccessor(function(d){
+          return d.value.min * priceMultiplier();
+        }).stack(groups.hour, function(d) {
+          return (d.value.avg - d.value.min) * priceMultiplier();
+        }).stack(groups.hour, function(d) {
+          return (d.value.max - d.value.avg) * priceMultiplier();
+        });
+        $(charts.time.anchor()).addClass('stacked');
+
+        if(charts.date) dc.deregisterChart(charts.date);
+        buildDateChart();
+        charts.date.valueAccessor(function(d){
+          return d.value.min * priceMultiplier();
+        }).stack(groups.date, function(d) {
+          return (d.value.avg - d.value.min) * priceMultiplier();
+        }).stack(groups.date, function(d) {
+          return (d.value.max - d.value.avg) * priceMultiplier();
+        });
+        $(charts.date.anchor()).addClass('stacked');
+
+        break;
+    };
+  }
+
+  function priceMultiplier() {
+    return price_scale == 'dollars-per-mwh' ? 1.0 : 0.1;
+  }
+
+  function priceScaleName() {
+    return price_scale == 'dollars-per-mwh' ? '$/MWh' : '&cent/kWh';
+  }
+
 });
+
+function buildTimeChart() {
+  charts.time = dc.lineChart('#price_by_time_chart')
+    .height(400)
+    .x(d3.scale.linear().domain([0,23.5]))
+    .renderArea(true)
+    .brushOn(true)
+    .xAxisLabel("Time of day")
+    .yAxisLabel('Price')
+    .elasticY(true)
+    .dimension(dimensions.hour)
+    .group(groups.hour);
+  charts.time.width($('#price_by_time_chart').width());
+}
+
+function buildDateChart() {
+  charts.date = dc.lineChart('#price_by_dom_chart')
+    .height(160)
+    .width($('#price_by_dom_chart').width())
+    .x(d3.time.scale().domain([new Date(2015,1,1), new Date(2016,1,0)]))
+    .round(d3.time.day.round)
+    .renderArea(true)
+    .brushOn(true)
+    .xAxisLabel("Date")
+    .yAxisLabel(" ")
+    .elasticY(true)
+    .dimension(dimensions.date)
+    .group(groups.date);
+  charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
+}

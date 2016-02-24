@@ -14,6 +14,6 @@
 //= require d3
 //= require crossfilter
 //= require reductio
-//= require dcjs
+//= require dc
 //= require bootstrap
 //= require_tree .

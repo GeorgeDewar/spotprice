@@ -2,7 +2,7 @@
   width: 100%;
 }
 
-#price_by_time_chart, #price_by_dom_chart {
+#price_by_time_chart.stacked, #price_by_dom_chart.stacked {
   g.stack._0 {
     .area {
       fill: none;
