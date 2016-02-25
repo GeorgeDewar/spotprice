@@ -3,7 +3,7 @@
   <p>
     This is an interactive visualisation showing New Zealand's average electricity spot prices in half-hourly
     increments by time of day over the past year. Prices are shown in dollars per megawatt-hour. If you are a retail
-    consumer of electricity, you're probably used to cents per kilowatt-hour, so just divide by 10.
+    consumer of electricity, you're probably used to cents per kilowatt-hour, and you can choose this in .
   </p>
   <p>
     You can select a time range, date range and/or one or more days of the week and the other charts will be filtered
@@ -16,17 +16,20 @@
   </p>
   <p>This project is open source -
     <%= link_to "check it out on GitHub", "https://github.com/GeorgeDewar/spotprice" %> if you're interested.</p>
-  <p>
-    <h2>Coming soon:</h2>
-    <ul>
-      <li>Options to show minimum and maximum prices (instead of average)</li>
-      <li>Moving averages (to make it easier to see overall trends)</li>
-      <li>Overlays of other types of data that affects pricing - e.g. rainfall, temperature</li>
-      <li>Information about different types of generation - you'll be able to see how green the power is at
-      different times</li>
-      <li>Easier selection of your grid exit point</li>
-      <li>And more...</li>
-    </ul>
-  </p>
+
+  <div class="alert alert-info"><strong>NEW: </strong> You can now select to view the "typical range" (which shows one standard deviation
+  above and below the average to help you see how variable prices are at certain times) or minimums and maximums,
+  which is great for spotting price spikes, or unusually cheap periods.</div>
+
+  <h2>Coming soon:</h2>
+  <ul>
+    <li>Moving averages (to make it easier to see overall trends)</li>
+    <li>Overlays of other types of data that affects pricing - e.g. rainfall, temperature</li>
+    <li>Information about different types of generation - you'll be able to see how green the power is at
+    different times</li>
+    <li>Easier selection of your grid exit point</li>
+    <li>And more...</li>
+  </ul>
+
 
 </div>
