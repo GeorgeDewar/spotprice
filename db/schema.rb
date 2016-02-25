@@ -18,19 +18,20 @@ ActiveRecord::Schema.define(version: 20160225082948) do
 
   create_table "generation_amounts", force: :cascade do |t|
     t.integer "generator_id", null: false
+    t.integer "node_id",      null: false
+    t.string  "network_code", null: false
     t.date    "date",         null: false
     t.integer "period",       null: false
     t.decimal "quantity",     null: false
   end
 
-  add_index "generation_amounts", ["generator_id", "date", "period"], name: "index_generation_amounts_on_generator_id_and_date_and_period", unique: true, using: :btree
+  add_index "generation_amounts", ["generator_id", "node_id", "network_code", "date", "period"], name: "generation_amounts_unique", unique: true, using: :btree
 
   create_table "generators", force: :cascade do |t|
-    t.string  "code",       null: false
-    t.string  "name"
-    t.integer "node_id",    null: false
-    t.string  "fuel",       null: false
-    t.string  "technology", null: false
+    t.string "code",       null: false
+    t.string "name"
+    t.string "fuel",       null: false
+    t.string "technology", null: false
   end
 
   create_table "nodes", force: :cascade do |t|
