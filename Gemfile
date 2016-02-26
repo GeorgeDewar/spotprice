@@ -14,6 +14,7 @@ group :development do
   gem 'pry-byebug'
   gem 'better_errors'
   gem 'spring'
+  gem 'annotate'
 end
 
 source 'https://rails-assets.org' do
