@@ -1,0 +1,35 @@
+<div class="container-fluid">
+  <p class="subheading">Showing data from <%= @from.strftime("%B %Y") %> to <%= @to.strftime("%B %Y") %>.
+    Click and drag to filter the charts below, or click to select days of the week.
+  </p>
+  <div class="row">
+    <div class="col-md-9">
+      <div id="price_by_time_chart" class="chart stacked"></div>
+      <div id="price_by_dom_chart" class="chart stacked"></div>
+    </div>
+    <div class="col-md-3">
+      <!--<div id="options-panel">-->
+        <!--<legend>Options</legend>-->
+
+        <!--<strong>Data</strong>-->
+        <!--<div class="radio">-->
+          <!--<label><input type="radio" name="display_value" value="average-only" checked="checked">-->
+            <!--Average only</label>-->
+        <!--</div>-->
+        <!--<div class="radio">-->
+          <!--<label><input type="radio" name="display_value" value="typical-range">-->
+            <!--Show typical range</label>-->
+        <!--</div>-->
+        <!--<div class="radio">-->
+          <!--<label><input type="radio" name="display_value" value="min-max">-->
+            <!--Show minimum and maximums</label>-->
+        <!--</div>-->
+      <!--</div>-->
+      <div id="price_by_day_of_week_chart" class="chart">
+        <legend>Day of week</legend>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= javascript_include_tag 'generation' %>
