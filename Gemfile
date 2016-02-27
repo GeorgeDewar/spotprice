@@ -22,4 +22,5 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-d3'
   gem 'rails-assets-crossfilter'
   #gem 'rails-assets-dcjs', '2.0.0.beta19'
+  gem 'rails-assets-nprogress'
 end

@@ -8,56 +8,92 @@ var technologyNames = ["Wind", "Hydro-electric", "Geothermal", "Co-generation", 
 var technologyColours = ["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"];
 var periodsPerDay = 48;
 
+var loadQueue = [];
+
+function continueQueue(){
+  NProgress.inc();
+  var nextFunction = loadQueue.shift();
+  if(nextFunction) window.setTimeout(nextFunction, 0);
+}
+
 $(function(){
+  NProgress.configure({ trickle: false });
+  NProgress.start();
   d3.csv("/data/generation", function(data) {
-    data.forEach(function(d){
-      d.hour = (+d.period - 1) / 2;
-      d.quantity = +d.quantity / 1000000; // GWh
-      d.date = new Date(d.date);
-    });
+    NProgress.inc();
 
-    ndx = crossfilter(data);
-
-    dimensions.hour = ndx.dimension(function(d) {
-      return d.hour;
-    });
-
-    dimensions.date = ndx.dimension(function(d) {
-      return d.date;
-    });
-    groups.date = reductio()
-      .min(function(d) { return d.quantity; })
-      .max(function(d) { return d.quantity; })
-      .avg(function(d) { return d.quantity; })
-      .std(function(d) { return d.quantity; })(dimensions.date.group());
-
-    dimensions.day_of_week = ndx.dimension(function (d) {
-      var day = d.date.getDay();
-      var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return day + '. ' + name[day];
-    });
-    groups.day_of_week = reductio().avg(function(d) { return d.quantity; })(dimensions.day_of_week.group());
-
-    updateDisplayValue();
-
-    charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
-      .height(250)
-      .width($('#price_by_day_of_week_chart').width())
-      .dimension(dimensions.day_of_week)
-      .group(groups.day_of_week)
-      .valueAccessor(function(d){
-        // Hacky but should work well enough... gives us the average per day
-        return d.value.avg * technologies.length * periodsPerDay;
-      })
-      .transitionDuration(0);
-    charts.day_of_week.xAxis().ticks($('#price_by_day_of_week_chart').width() / 95);;
-    charts.day_of_week.renderlet(function(chart) {
-      chart.selectAll("g.row rect").attr("fill", function (d) {
-        return "#337AB7";
+    loadQueue.push(function() {
+      data.forEach(function (d) {
+        d.hour = (+d.period - 1) / 2;
+        d.quantity = +d.quantity / 1000000; // GWh
+        d.date = new Date(d.date);
       });
+      continueQueue();
     });
 
-    dc.renderAll();
+    loadQueue.push(function() {
+      ndx = crossfilter(data);
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      dimensions.hour = ndx.dimension(function (d) {
+        return d.hour;
+      })
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      dimensions.date = ndx.dimension(function (d) {
+        return d.date;
+      });
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      dimensions.day_of_week = ndx.dimension(function (d) {
+        var day = d.date.getDay();
+        var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return day + '. ' + name[day];
+      });
+      groups.day_of_week = reductio().avg(function (d) {
+        return d.quantity;
+      })(dimensions.day_of_week.group());
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      updateDisplayValue();
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
+        .height(250)
+        .width($('#price_by_day_of_week_chart').width())
+        .dimension(dimensions.day_of_week)
+        .group(groups.day_of_week)
+        .valueAccessor(function (d) {
+          // Hacky but should work well enough... gives us the average per day
+          return d.value.avg * technologies.length * periodsPerDay;
+        })
+        .transitionDuration(0);
+      charts.day_of_week.xAxis().ticks($('#price_by_day_of_week_chart').width() / 95);
+      charts.day_of_week.renderlet(function (chart) {
+        chart.selectAll("g.row rect").attr("fill", function (d) {
+          return "#337AB7";
+        });
+      });
+      continueQueue();
+    });
+
+    loadQueue.push(function() {
+      dc.renderAll();
+      NProgress.done();
+    });
+
+    // Start the queue off
+    loadQueue.shift()();
   });
 
   $('#gxp-select').click(function(){
