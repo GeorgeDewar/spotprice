@@ -5,6 +5,7 @@ var charts = {};
 var display_value = 'average-only';
 var technologies = ["Wind",  "Hydro", "Geo", "Cogen", "Gas", "Coal", "Diesel"];
 var technologyNames = ["Wind", "Hydro-electric", "Geothermal", "Co-generation", "Gas", "Coal", "Diesel"];
+var technologyColours = ["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"];
 var periodsPerDay = 48;
 
 $(function(){
@@ -190,7 +191,7 @@ function buildTimeChart() {
     .elasticY(true)
     .dimension(dimensions.hour)
     .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true))
-    .colors(d3.scale.ordinal().range(["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"]));
+    .colors(d3.scale.ordinal().range(technologyColours));
 }
 
 function buildDateChart() {
@@ -205,6 +206,6 @@ function buildDateChart() {
     .yAxisLabel("Generation (GWh)")
     .elasticY(true)
     .dimension(dimensions.date)
-    .colors(d3.scale.ordinal().range(["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"]));
+    .colors(d3.scale.ordinal().range(technologyColours));
   charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
 }
