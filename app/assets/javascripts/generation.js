@@ -3,8 +3,8 @@ var dimensions = {};
 var groups = {};
 var charts = {};
 var display_value = 'average-only';
-var technologies = ["Wind", "Geo", "Cogen", "Gas", "Coal", "Hydro", "Other"];
-var technologyNames = ["Wind", "Geothermal", "Co-generation", "Gas", "Coal", "Hydro-electric", "Other"];
+var technologies = ["Wind",  "Hydro", "Geo", "Cogen", "Gas", "Coal", "Diesel"];
+var technologyNames = ["Wind", "Hydro-electric", "Geothermal", "Co-generation", "Gas", "Coal", "Diesel"];
 var periodsPerDay = 48;
 
 $(function(){
@@ -181,7 +181,8 @@ function buildTimeChart() {
     .elasticY(true)
     .dimension(dimensions.hour)
     .group(groups.hour)
-    .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true));
+    .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true))
+    .colors(d3.scale.ordinal().range(["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"]));
 }
 
 function buildDateChart() {

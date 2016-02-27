@@ -38,12 +38,12 @@ class DiscoveryController < ApplicationController
     max_date = Price.maximum(:date)
     csv = Rails.cache.fetch("generation/#{max_date}/csv") do
       generation_amounts = ActiveRecord::Base.connection.select_all <<-SQL
-        select date, period, case when fuel in ('Wood', 'Diesel') then 'Other' else fuel end as fuel, sum(quantity) as quantity
+        select date, period, case when technology = 'Cogen' then 'Cogen' else fuel end fuel, sum(quantity) as quantity
         from generation_amounts
         inner join generators on generators.id = generation_amounts.generator_id
         where date >= '#{max_date - 12.months + 1.day}' and period <= 48
-        group by date, period, fuel
-        order by date, period, fuel
+        group by date, period, case when technology = 'Cogen' then 'Cogen' else fuel end
+        order by date, period, case when technology = 'Cogen' then 'Cogen' else fuel end
       SQL
       CSV.generate(encoding: "UTF-8") do |csv|
         csv << generation_amounts.first.keys
