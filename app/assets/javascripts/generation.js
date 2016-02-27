@@ -92,17 +92,18 @@ $(function(){
             .avg(function(d) { return d.quantity; })(dimensions.hour.group());
         });
 
-        charts.time.group(groups[0]).valueAccessor(function(d){
+        charts.time.group(groups[0], technologies[0]).valueAccessor(function(d){
           return d.value.avg * 2;
-        }).stack(groups[1], function(d) {
+        }).stack(groups[1], technologies[1], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[2], function(d) {
+        }).stack(groups[2], technologies[2], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[3], function(d) {
+        }).stack(groups[3], technologies[3], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[4], function(d) {
+        }).stack(groups[4], technologies[4], function(d) {
           return d.value.avg * 2;
         });
+
         $(charts.time.anchor()).removeClass('stacked');
 
         charts.date.valueAccessor(function(d){
@@ -171,6 +172,8 @@ $(function(){
 function buildTimeChart() {
   charts.time = dc.lineChart('#price_by_time_chart')
     .height(400)
+    .width($('#price_by_time_chart').width())
+    .margins({top: 40, right: 50, bottom: 30, left: 30})
     .x(d3.scale.linear().domain([0,23.5]))
     .renderArea(true)
     .brushOn(true)
@@ -178,8 +181,8 @@ function buildTimeChart() {
     .yAxisLabel('Generation (GW)')
     .elasticY(true)
     .dimension(dimensions.hour)
-    .group(groups.hour);
-  charts.time.width($('#price_by_time_chart').width());
+    .group(groups.hour)
+    .legend(dc.legend().x(30).y(10).itemWidth(65).horizontal(true));
 }
 
 function buildDateChart() {
