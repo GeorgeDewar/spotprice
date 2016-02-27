@@ -3,8 +3,8 @@ var dimensions = {};
 var groups = {};
 var charts = {};
 var display_value = 'average-only';
-var technologies = ["Wind", "Geo", "Cogen", "Thrml", "Hydro"];
-var technologyNames = ["Wind", "Geothermal", "Co-generation", "Thermal", "Hydro-electric"];
+var technologies = ["Wind", "Geo", "Cogen", "Gas", "Coal", "Hydro", "Other"];
+var technologyNames = ["Wind", "Geothermal", "Co-generation", "Gas", "Coal", "Hydro-electric", "Other"];
 var periodsPerDay = 48;
 
 $(function(){
@@ -89,21 +89,19 @@ $(function(){
     switch(display_value) {
       case 'average-only':
         var groups = technologies.map(function(g){
-          return reductio().filter(function(d){ return d.technology == g; })
+          return reductio().filter(function(d){ return d.fuel == g; })
             .avg(function(d) { return d.quantity; })(dimensions.hour.group());
         });
 
         charts.time.group(groups[0], technologyNames[0]).valueAccessor(function(d){
           return d.value.avg * 2;
-        }).stack(groups[1], technologyNames[1], function(d) {
-          return d.value.avg * 2;
-        }).stack(groups[2], technologyNames[2], function(d) {
-          return d.value.avg * 2;
-        }).stack(groups[3], technologyNames[3], function(d) {
-          return d.value.avg * 2;
-        }).stack(groups[4], technologyNames[4], function(d) {
-          return d.value.avg * 2;
         });
+
+        for(var i=1; i<groups.length; i++){
+          charts.time.stack(groups[i], technologyNames[i], function(d) {
+            return d.value.avg * 2;
+          })
+        }
 
         $(charts.time.anchor()).removeClass('stacked');
 
