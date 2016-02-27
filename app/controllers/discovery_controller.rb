@@ -36,7 +36,7 @@ class DiscoveryController < ApplicationController
 
   def generation_data
     max_date = Price.maximum(:date)
-    #csv = Rails.cache.fetch("prices/#{node.code}/#{max_date}/csv") do
+    csv = Rails.cache.fetch("generation/#{max_date}/csv") do
       generation_amounts = ActiveRecord::Base.connection.select_all <<-SQL
         select date, period, technology, sum(quantity) as quantity
         from generation_amounts
@@ -45,13 +45,13 @@ class DiscoveryController < ApplicationController
         group by date, period, technology
         order by date, period, technology
       SQL
-      csv = CSV.generate(encoding: "UTF-8") do |csv|
+      CSV.generate(encoding: "UTF-8") do |csv|
         csv << generation_amounts.first.keys
         generation_amounts.each do |x|
           csv << x.values
         end
       end
-    #end
+    end
     render body: csv
   end
 

@@ -10,7 +10,7 @@ $(function(){
   d3.csv("/data/generation", function(data) {
     data.forEach(function(d){
       d.hour = (+d.period - 1) / 2;
-      d.quantity = +d.quantity / 1000; // MWh
+      d.quantity = +d.quantity / 1000000; // GWh
       d.date = new Date(d.date);
     });
 
@@ -19,11 +19,6 @@ $(function(){
     dimensions.hour = ndx.dimension(function(d) {
       return d.hour;
     });
-    groups.hour = reductio()
-      .min(function(d) { return d.quantity; })
-      .max(function(d) { return d.quantity; })
-      .avg(function(d) { return d.quantity; })
-      .std(function(d) { return d.quantity; })(dimensions.hour.group());
 
     dimensions.date = ndx.dimension(function(d) {
       return d.date;
@@ -98,15 +93,15 @@ $(function(){
         });
 
         charts.time.group(groups[0]).valueAccessor(function(d){
-          return d.value.avg;
+          return d.value.avg * 2;
         }).stack(groups[1], function(d) {
-          return d.value.avg;
+          return d.value.avg * 2;
         }).stack(groups[2], function(d) {
-          return d.value.avg;
+          return d.value.avg * 2;
         }).stack(groups[3], function(d) {
-          return d.value.avg;
+          return d.value.avg * 2;
         }).stack(groups[4], function(d) {
-          return d.value.avg;
+          return d.value.avg * 2;
         });
         $(charts.time.anchor()).removeClass('stacked');
 
@@ -180,7 +175,7 @@ function buildTimeChart() {
     .renderArea(true)
     .brushOn(true)
     .xAxisLabel("Time of day")
-    .yAxisLabel('Quantity (MWh per 30min period)')
+    .yAxisLabel('Generation (GW)')
     .elasticY(true)
     .dimension(dimensions.hour)
     .group(groups.hour);
@@ -196,7 +191,7 @@ function buildDateChart() {
     .renderArea(true)
     .brushOn(true)
     .xAxisLabel("Date")
-    .yAxisLabel(" ")
+    .yAxisLabel("Generation (GWh)")
     .elasticY(true)
     .dimension(dimensions.date)
     .group(groups.date);
