@@ -4,6 +4,7 @@ var groups = {};
 var charts = {};
 var display_value = 'average-only';
 var technologies = ["Wind", "Geo", "Cogen", "Thrml", "Hydro"];
+var technologyNames = ["Wind", "Geothermal", "Co-generation", "Thermal", "Hydro-electric"];
 var periodsPerDay = 48;
 
 $(function(){
@@ -92,15 +93,15 @@ $(function(){
             .avg(function(d) { return d.quantity; })(dimensions.hour.group());
         });
 
-        charts.time.group(groups[0], technologies[0]).valueAccessor(function(d){
+        charts.time.group(groups[0], technologyNames[0]).valueAccessor(function(d){
           return d.value.avg * 2;
-        }).stack(groups[1], technologies[1], function(d) {
+        }).stack(groups[1], technologyNames[1], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[2], technologies[2], function(d) {
+        }).stack(groups[2], technologyNames[2], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[3], technologies[3], function(d) {
+        }).stack(groups[3], technologyNames[3], function(d) {
           return d.value.avg * 2;
-        }).stack(groups[4], technologies[4], function(d) {
+        }).stack(groups[4], technologyNames[4], function(d) {
           return d.value.avg * 2;
         });
 
@@ -182,7 +183,7 @@ function buildTimeChart() {
     .elasticY(true)
     .dimension(dimensions.hour)
     .group(groups.hour)
-    .legend(dc.legend().x(30).y(10).itemWidth(65).horizontal(true));
+    .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true));
 }
 
 function buildDateChart() {
