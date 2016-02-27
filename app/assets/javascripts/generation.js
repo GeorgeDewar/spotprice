@@ -88,26 +88,35 @@ $(function(){
 
     switch(display_value) {
       case 'average-only':
-        var groups = technologies.map(function(g){
+        var hourGroups = technologies.map(function(g){
           return reductio().filter(function(d){ return d.fuel == g; })
             .avg(function(d) { return d.quantity; })(dimensions.hour.group());
         });
 
-        charts.time.group(groups[0], technologyNames[0]).valueAccessor(function(d){
-          return d.value.avg * 2;
+        charts.time.group(hourGroups[0], technologyNames[0]).valueAccessor(function(d){
+          return d.value.avg * 2; // to get MWh per hour, rather than half hour
         });
-
-        for(var i=1; i<groups.length; i++){
-          charts.time.stack(groups[i], technologyNames[i], function(d) {
+        for(var i=1; i<hourGroups.length; i++){
+          charts.time.stack(hourGroups[i], technologyNames[i], function(d) {
             return d.value.avg * 2;
           })
         }
 
         $(charts.time.anchor()).removeClass('stacked');
 
-        charts.date.valueAccessor(function(d){
+        var dateGroups = technologies.map(function(g){
+          return reductio().filter(function(d){ return d.fuel == g; })
+            .avg(function(d) { return d.quantity; })(dimensions.date.group());
+        });
+
+        charts.date.group(dateGroups[0], technologyNames[0]). valueAccessor(function(d){
           return d.value.sum;
         });
+        for(var i=1; i<dateGroups.length; i++){
+          charts.date.stack(dateGroups[i], technologyNames[i], function(d) {
+            return d.value.sum;
+          })
+        }
         $(charts.date.anchor()).removeClass('stacked');
 
         break;
@@ -180,7 +189,6 @@ function buildTimeChart() {
     .yAxisLabel('Generation (GW)')
     .elasticY(true)
     .dimension(dimensions.hour)
-    .group(groups.hour)
     .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true))
     .colors(d3.scale.ordinal().range(["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"]));
 }
@@ -197,6 +205,6 @@ function buildDateChart() {
     .yAxisLabel("Generation (GWh)")
     .elasticY(true)
     .dimension(dimensions.date)
-    .group(groups.date);
+    .colors(d3.scale.ordinal().range(["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"]));
   charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
 }
