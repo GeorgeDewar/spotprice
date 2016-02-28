@@ -99,6 +99,7 @@ GEM
     rails-assets-crossfilter (1.3.12)
     rails-assets-d3 (3.5.15)
     rails-assets-jquery (2.2.0)
+    rails-assets-nprogress (0.2.0)
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
     rails-dom-testing (1.0.7)
@@ -158,6 +159,7 @@ DEPENDENCIES
   rails-assets-bootstrap!
   rails-assets-crossfilter!
   rails-assets-d3!
+  rails-assets-nprogress!
   rbtrace
   sass-rails
   spring

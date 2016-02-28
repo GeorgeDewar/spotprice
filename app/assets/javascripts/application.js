@@ -16,4 +16,5 @@
 //= require reductio
 //= require dc
 //= require bootstrap
-//= require_tree .
+//= require nprogress
+//= require dc_helpers

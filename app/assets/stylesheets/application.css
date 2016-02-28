@@ -12,6 +12,7 @@
  *
  *= require bootstrap
  *= require dc
+ *= require nprogress
  *= require_tree .
  *= require_self
  */
