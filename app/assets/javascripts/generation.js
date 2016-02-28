@@ -3,9 +3,15 @@ var dimensions = {};
 var groups = {};
 var charts = {};
 var display_value = 'average-only';
-var technologies = ["Wind",  "Hydro", "Geo", "Cogen", "Gas", "Coal", "Diesel"];
-var technologyNames = ["Wind", "Hydro-electric", "Geothermal", "Co-generation", "Gas", "Coal", "Diesel"];
-var technologyColours = ["lightblue", "blue", "orange", "yellow", "red", "brown", "gray"];
+var generationSources = [
+  { code: "Wind", name: "Wind", colour: "lightblue" },
+  { code: "Hydro", name: "Hydro-electric", colour: "blue" },
+  { code: "Geo", name: "Geothermal", colour: "orange" },
+  { code: "Cogen", name: "Co-generation", colour: "yellow" },
+  { code: "Gas", name: "Gas", colour: "red" },
+  { code: "Coal", name: "Coal", colour: "brown" },
+  { code: "Diesel", name: "Diesel", colour: "gray" }
+]
 var periodsPerDay = 48;
 
 var loadQueue = [];
@@ -75,7 +81,7 @@ $(function(){
         .group(groups.day_of_week)
         .valueAccessor(function (d) {
           // Hacky but should work well enough... gives us the average per day
-          return d.value.avg * technologies.length * periodsPerDay;
+          return d.value.avg * generationSources.length * periodsPerDay;
         })
         .transitionDuration(0);
       charts.day_of_week.xAxis().ticks($('#price_by_day_of_week_chart').width() / 95);
@@ -125,32 +131,32 @@ $(function(){
 
     switch(display_value) {
       case 'average-only':
-        var hourGroups = technologies.map(function(g){
-          return reductio().filter(function(d){ return d.fuel == g; })
+        var hourGroups = generationSources.map(function(technology){
+          return reductio().filter(function(d){ return d.fuel == technology.code; })
             .avg(function(d) { return d.quantity; })(dimensions.hour.group());
         });
 
-        charts.time.group(hourGroups[0], technologyNames[0]).valueAccessor(function(d){
+        charts.time.group(hourGroups[0], generationSources[0].name).valueAccessor(function(d){
           return d.value.avg * 2; // to get MWh per hour, rather than half hour
         });
         for(var i=1; i<hourGroups.length; i++){
-          charts.time.stack(hourGroups[i], technologyNames[i], function(d) {
+          charts.time.stack(hourGroups[i], generationSources[i].name, function(d) {
             return d.value.avg * 2;
           })
         }
 
         $(charts.time.anchor()).removeClass('stacked');
 
-        var dateGroups = technologies.map(function(g){
-          return reductio().filter(function(d){ return d.fuel == g; })
+        var dateGroups = generationSources.map(function(technology){
+          return reductio().filter(function(d){ return d.fuel == technology.code; })
             .avg(function(d) { return d.quantity; })(dimensions.date.group());
         });
 
-        charts.date.group(dateGroups[0], technologyNames[0]). valueAccessor(function(d){
+        charts.date.group(dateGroups[0], generationSources[0].name). valueAccessor(function(d){
           return d.value.sum;
         });
         for(var i=1; i<dateGroups.length; i++){
-          charts.date.stack(dateGroups[i], technologyNames[i], function(d) {
+          charts.date.stack(dateGroups[i], generationSources[i].name, function(d) {
             return d.value.sum;
           })
         }
@@ -227,7 +233,7 @@ function buildTimeChart() {
     .elasticY(true)
     .dimension(dimensions.hour)
     .legend(dc.legend().x(50).y(10).autoItemWidth(true).gap(10).horizontal(true))
-    .colors(d3.scale.ordinal().range(technologyColours));
+    .colors(d3.scale.ordinal().range(generationSources.map(function(t) { return t.colour; })));
 }
 
 function buildDateChart() {
@@ -242,6 +248,6 @@ function buildDateChart() {
     .yAxisLabel("Generation (GWh)")
     .elasticY(true)
     .dimension(dimensions.date)
-    .colors(d3.scale.ordinal().range(technologyColours));
+    .colors(d3.scale.ordinal().range(generationSources.map(function(t) { return t.colour; })));
   charts.date.xAxis().ticks($('#price_by_dom_chart').width() / 95);
 }
