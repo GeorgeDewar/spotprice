@@ -11,17 +11,21 @@ var generationSources = [
   { code: "Gas", name: "Gas", colour: "red" },
   { code: "Coal", name: "Coal", colour: "brown" },
   { code: "Diesel", name: "Diesel", colour: "gray" }
-]
+];
 var periodsPerDay = 48;
 
+// A quick and dirty implementation of a queue to prevent the UI thread from being tied up for several seconds, and
+// allow a progress bar to work. Will tidy this up later.
 var loadQueue = [];
-
 function continueQueue(){
   NProgress.inc();
   var nextFunction = loadQueue.shift();
   if(nextFunction) window.setTimeout(nextFunction, 0);
 }
 
+// This page contains the (currently unused) logic from the Spot Prices page, which would allow for switching between
+// different types of stacking for standard deviation or min/max views. If I decide not to implement these, this code
+// can get a bit simpler.
 $(function(){
   NProgress.configure({ trickle: false });
   NProgress.start();
@@ -164,43 +168,11 @@ $(function(){
 
         break;
       case 'typical-range':
-        charts.time.valueAccessor(function(d){
-          return (d.value.avg - d.value.std);
-        }).stack(groups.hour, function(d) {
-          return d.value.std;
-        }).stack(groups.hour, function(d) {
-          return d.value.std;
-        });
-        $(charts.time.anchor()).addClass('stacked');
-
-        charts.date.valueAccessor(function(d){
-          return (d.value.avg - d.value.std);
-        }).stack(groups.date, function(d) {
-          return d.value.std;
-        }).stack(groups.date, function(d) {
-          return d.value.std;
-        });
-        $(charts.date.anchor()).addClass('stacked');
+        // Not yet implemented
 
         break;
       case 'min-max':
-        charts.time.valueAccessor(function(d){
-          return d.value.min;
-        }).stack(groups.hour, function(d) {
-          return (d.value.avg - d.value.min);
-        }).stack(groups.hour, function(d) {
-          return (d.value.max - d.value.avg);
-        });
-        $(charts.time.anchor()).addClass('stacked');
-
-        charts.date.valueAccessor(function(d){
-          return d.value.min;
-        }).stack(groups.date, function(d) {
-          return (d.value.avg - d.value.min);
-        }).stack(groups.date, function(d) {
-          return (d.value.max - d.value.avg);
-        });
-        $(charts.date.anchor()).addClass('stacked');
+        // Not yet implemented
 
         break;
     };
