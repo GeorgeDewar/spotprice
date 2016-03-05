@@ -17,5 +17,5 @@
 //= require dc
 //= require bootstrap
 //= require nprogress
-//= require simple_queue
+//= require load_chain
 //= require dc_helpers

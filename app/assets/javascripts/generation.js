@@ -18,7 +18,7 @@ var periodsPerDay = 48;
 // different types of stacking for standard deviation or min/max views. If I decide not to implement these, this code
 // can get a bit simpler.
 $(function(){
-  var loadQueue = new SimpleQueue();
+  var loadQueue = new LoadChain();
 
   NProgress.configure({ trickle: true });
   NProgress.start();

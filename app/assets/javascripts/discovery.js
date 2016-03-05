@@ -6,7 +6,7 @@ var display_value = 'average-only';
 var price_scale = 'dollars-per-mwh';
 
 $(function(){
-  var loadQueue = new SimpleQueue();
+  var loadQueue = new LoadChain();
   NProgress.configure({ trickle: true });
   NProgress.start();
 
