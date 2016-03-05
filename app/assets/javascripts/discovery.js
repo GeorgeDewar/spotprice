@@ -6,76 +6,81 @@ var display_value = 'average-only';
 var price_scale = 'dollars-per-mwh';
 
 $(function(){
+  var loadQueue = new SimpleQueue();
+  NProgress.configure({ trickle: true });
+  NProgress.start();
+
   d3.csv("/data?node=" + NODE, function(data) {
-    data.forEach(function(d){
-      d.hour = (+d.period - 1) / 2;
-      d.price = +d.price;
-      d.date = new Date(d.date);
-    });
+    NProgress.inc();
 
-    ndx = crossfilter(data);
-
-    dimensions.hour = ndx.dimension(function(d) {
-      return d.hour;
-    });
-    groups.hour = reductio()
-      .min(function(d) { return d.price; })
-      .max(function(d) { return d.price; })
-      .avg(function(d) { return d.price; })
-      .std(function(d) { return d.price; })(dimensions.hour.group());
-
-    dimensions.date = ndx.dimension(function(d) {
-      return d.date;
-    });
-    groups.date = reductio()
-      .min(function(d) { return d.price; })
-      .max(function(d) { return d.price; })
-      .avg(function(d) { return d.price; })
-      .std(function(d) { return d.price; })(dimensions.date.group());
-
-    dimensions.day_of_week = ndx.dimension(function (d) {
-      var day = d.date.getDay();
-      var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return day + '. ' + name[day];
-    });
-    groups.day_of_week = reductio().avg(function(d) { return d.price; })(dimensions.day_of_week.group());
-
-    //buildTimeChart();
-    //charts.time.valueAccessor(function(d){
-    //    return (d.value.avg - d.value.std) * priceMultiplier();
-    //}).stack(groups.hour, function(d) {
-    //  return d.value.std * priceMultiplier();
-    //}).stack(groups.hour, function(d) {
-    //  return d.value.std * priceMultiplier();
-    //});
-    //
-    //buildDateChart();
-    //charts.date.valueAccessor(function(d){
-    //  return d.value.min * priceMultiplier();
-    //}).stack(groups.date, function(d) {
-    //  return (d.value.avg - d.value.min) * priceMultiplier();
-    //}).stack(groups.date, function(d) {
-    //  return (d.value.max - d.value.avg) * priceMultiplier();
-    //});
-
-    updateDisplayValue();
-
-    charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
-      .height(250)
-      .width($('#price_by_day_of_week_chart').width())
-      .dimension(dimensions.day_of_week)
-      .group(groups.day_of_week)
-      .valueAccessor(function(d){
-        return d.value.avg;
-      })
-      .transitionDuration(0);
-      charts.day_of_week.renderlet(function(chart) {
-      chart.selectAll("g.row rect").attr("fill", function (d) {
-        return "#337AB7";
+    loadQueue.push(function() {
+      data.forEach(function (d) {
+        d.hour = (+d.period - 1) / 2;
+        d.price = +d.price;
+        d.date = new Date(d.date);
       });
+      NProgress.inc();
     });
 
-    dc.renderAll();
+    loadQueue.push(function() {
+      ndx = crossfilter(data);
+      NProgress.inc();
+    });
+
+    loadQueue.push(function() {
+      dimensions.hour = ndx.dimension(function(d) {
+        return d.hour;
+      });
+      groups.hour = reductio()
+        .min(function(d) { return d.price; })
+        .max(function(d) { return d.price; })
+        .avg(function(d) { return d.price; })
+        .std(function(d) { return d.price; })(dimensions.hour.group());
+
+      dimensions.date = ndx.dimension(function(d) {
+        return d.date;
+      });
+      groups.date = reductio()
+        .min(function(d) { return d.price; })
+        .max(function(d) { return d.price; })
+        .avg(function(d) { return d.price; })
+        .std(function(d) { return d.price; })(dimensions.date.group());
+
+      dimensions.day_of_week = ndx.dimension(function (d) {
+        var day = d.date.getDay();
+        var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return day + '. ' + name[day];
+      });
+      groups.day_of_week = reductio().avg(function(d) { return d.price; })(dimensions.day_of_week.group());
+      NProgress.inc();
+    });
+
+    loadQueue.push(function() {
+      updateDisplayValue();
+
+      charts.day_of_week = dc.rowChart('#price_by_day_of_week_chart')
+        .height(250)
+        .width($('#price_by_day_of_week_chart').width())
+        .dimension(dimensions.day_of_week)
+        .group(groups.day_of_week)
+        .valueAccessor(function(d){
+          return d.value.avg;
+        })
+        .transitionDuration(0);
+        charts.day_of_week.renderlet(function(chart) {
+        chart.selectAll("g.row rect").attr("fill", function (d) {
+          return "#337AB7";
+        });
+      });
+      NProgress.inc();
+    });
+
+    loadQueue.push(function() {
+      dc.renderAll();
+      NProgress.done();
+    });
+
+    loadQueue.start();
   });
 
   $('#gxp-select').click(function(){

@@ -14,20 +14,13 @@ var generationSources = [
 ];
 var periodsPerDay = 48;
 
-// A quick and dirty implementation of a queue to prevent the UI thread from being tied up for several seconds, and
-// allow a progress bar to work. Will tidy this up later.
-var loadQueue = [];
-function continueQueue(){
-  NProgress.inc();
-  var nextFunction = loadQueue.shift();
-  if(nextFunction) window.setTimeout(nextFunction, 0);
-}
-
 // This page contains the (currently unused) logic from the Spot Prices page, which would allow for switching between
 // different types of stacking for standard deviation or min/max views. If I decide not to implement these, this code
 // can get a bit simpler.
 $(function(){
-  NProgress.configure({ trickle: false });
+  var loadQueue = new SimpleQueue();
+
+  NProgress.configure({ trickle: true });
   NProgress.start();
   d3.csv("/data/generation", function(data) {
     NProgress.inc();
@@ -38,26 +31,26 @@ $(function(){
         d.quantity = +d.quantity / 1000000; // GWh
         d.date = new Date(d.date);
       });
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
       ndx = crossfilter(data);
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
       dimensions.hour = ndx.dimension(function (d) {
         return d.hour;
-      })
-      continueQueue();
+      });
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
       dimensions.date = ndx.dimension(function (d) {
         return d.date;
       });
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
@@ -69,12 +62,12 @@ $(function(){
       groups.day_of_week = reductio().avg(function (d) {
         return d.quantity;
       })(dimensions.day_of_week.group());
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
       updateDisplayValue();
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
@@ -94,7 +87,7 @@ $(function(){
           return "#337AB7";
         });
       });
-      continueQueue();
+      NProgress.inc();
     });
 
     loadQueue.push(function() {
@@ -103,7 +96,7 @@ $(function(){
     });
 
     // Start the queue off
-    loadQueue.shift()();
+    loadQueue.start();
   });
 
   $('#gxp-select').click(function(){
