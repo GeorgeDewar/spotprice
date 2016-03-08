@@ -10,4 +10,12 @@
 
 class Node < ActiveRecord::Base
   has_many :prices
+
+  def voltage
+    code[3..5].to_i
+  end
+
+  def description
+    "#{name || "Unknown"} (#{code}, #{voltage}kv)"
+  end
 end

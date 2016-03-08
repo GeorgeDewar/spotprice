@@ -62,7 +62,7 @@
           <p>Use the dropdown below to select a grid exit point.</p>
           <select id="gxp-dropdown" name="node">
             <% @nodes.each do |node| %>
-              <option value="<%= node.code %>"><%= node.name ? "#{node.name} (#{node.code})" : node.code %></option>
+              <option value="<%= node.code %>"><%= node.description %></option>
             <% end %>
           </select>
         </div>
