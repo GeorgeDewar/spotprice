@@ -5,6 +5,8 @@ var charts = {};
 var display_value = 'average-only';
 var price_scale = 'dollars-per-mwh';
 
+var map;
+
 $(function(){
   var loadQueue = new LoadChain();
   NProgress.configure({ trickle: true });
@@ -85,7 +87,29 @@ $(function(){
 
   $('#gxp-select').click(function(){
     $('#gxp-modal').modal('show');
+    map = L.map('node-map').setView([-41.3, 174.8], 10);
+
+    // create the tile layer with correct attribution
+    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+    var osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18, attribution: osmAttrib});
+    osm.addTo(map);
+
+    $.each(NODES, function(i, node) {
+      if(!node.location) return;
+      var marker = L.marker(node.location).addTo(map).bindPopup("<strong>" + node.name + "</strong><br />" + node.code, {closeButton: false, offset: L.point(0, -40)});
+      marker.on('mouseover', function (e) {
+        this.openPopup();
+      });
+      marker.on('mouseout', function (e) {
+        this.closePopup();
+      });
+
+    })
+
   });
+
+  $('#gxp-modal').on('shown.bs.modal', function () { map.invalidateSize(); });
 
   $('input[name="display_value"]').change(function(){
     display_value = $(this).val();

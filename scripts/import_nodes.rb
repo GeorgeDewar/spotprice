@@ -26,25 +26,3 @@ CSV.parse(content, headers: true) do |line|
       location: nztm_to_wgs84(line["NZTM easting"].to_f, line["NZTM northing"].to_f)
   )
 end
-
-# CSV.foreach(ARGV[0], headers: true) do |line|
-#   Node.find_or_initialize_by(code: line["GXP/GIP"]).update_attributes!(
-#     name: line["Name"],
-#     location: [line["Lat"].to_f, line["Long"].to_f]
-#   )
-# end
-
-#
-# easting = 1424393
-# northing = 5097839
-#
-# srcPoint = Proj4::Point.new(easting, northing)
-#
-# srcProj = Proj4::Projection.new('+proj=tmerc +lat_0=0 +lon_0=173 +k=0.9996 +x_0=1600000 +y_0=10000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ')
-# dstProj = Proj4::Projection.new('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-#
-# dstPoint = srcProj.transform(dstProj, srcPoint)
-#
-# print "lat=#{dstPoint.lat * (180 / Math::PI)}n"
-# print "lon=#{dstPoint.lon * (180 / Math::PI)}n"
-#

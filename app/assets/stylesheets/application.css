@@ -13,6 +13,7 @@
  *= require bootstrap
  *= require dc
  *= require nprogress
+ *= require leaflet
  *= require_tree .
  *= require_self
  */

@@ -10,6 +10,7 @@ gem 'rbtrace'
 gem 'puma'
 gem 'httparty'
 gem 'proj4rb'
+gem 'leaflet-rails'
 
 group :development do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

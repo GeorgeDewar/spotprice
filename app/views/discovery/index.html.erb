@@ -59,6 +59,8 @@
             different parts of the country. Some improvements are coming soon that will make it easy to find your
             grid exit point, but in the meantime if you are not sure, just go with the default option.</p>
 
+          <div id="node-map"></div>
+
           <p>Use the dropdown below to select a grid exit point.</p>
           <select id="gxp-dropdown" name="node">
             <% @nodes.each do |node| %>
@@ -78,5 +80,6 @@
 
 <script type="text/javascript">
   var NODE = '<%= @node.code %>';
+  var NODES = <%= raw @nodes.to_json(only: [:code, :name, :location]) %>;
 </script>
 <%= javascript_include_tag 'discovery' %>

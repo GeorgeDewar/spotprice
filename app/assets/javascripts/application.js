@@ -19,3 +19,4 @@
 //= require nprogress
 //= require load_chain
 //= require dc_helpers
+//= require leaflet
