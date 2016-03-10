@@ -5,7 +5,8 @@ class DiscoveryController < ApplicationController
   def index
     redirect_to root_path(node: "CPK0331") unless params[:node]
 
-    @nodes = Node.all
+    @nodes = Node.select("name, cast(location as varchar), array_agg(code) as codes").
+        group(:name, "cast(location as varchar)").as_json(except: :id)
     @node = Node.find_by_code(params[:node])
 
     @from = Price.maximum(:date) - 12.months + 1.day
@@ -17,7 +18,8 @@ class DiscoveryController < ApplicationController
     max_date = Price.maximum(:date)
     csv = Rails.cache.fetch("prices/#{node.code}/#{max_date}/csv") do
       prices = ActiveRecord::Base.connection.select_all <<-SQL
-      select date, period, price from prices where node_id = #{node.id} and date >= '#{max_date - 12.months + 1.day}' and period <= 48
+      select date, period, price from prices
+      where node_id = #{node.id} and date >= '#{max_date - 12.months + 1.day}' and period <= 48
       SQL
       CSV.generate(encoding: "UTF-8") do |csv|
         csv << prices.first.keys

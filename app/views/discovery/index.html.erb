@@ -61,12 +61,6 @@
 
           <div id="node-map"></div>
 
-          <p>Use the dropdown below to select a grid exit point.</p>
-          <select id="gxp-dropdown" name="node">
-            <% @nodes.each do |node| %>
-              <option value="<%= node.code %>"><%= node.description %></option>
-            <% end %>
-          </select>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">OK</button>
@@ -80,6 +74,6 @@
 
 <script type="text/javascript">
   var NODE = '<%= @node.code %>';
-  var NODES = <%= raw @nodes.to_json(only: [:code, :name, :location]) %>;
+  var NODES = <%= raw @nodes.to_json(only: ["name", "location", "codes"]) %>;
 </script>
 <%= javascript_include_tag 'discovery' %>
