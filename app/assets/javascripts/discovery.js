@@ -5,7 +5,7 @@ var charts = {};
 var display_value = 'average-only';
 var price_scale = 'dollars-per-mwh';
 
-var map;
+var map, currentNodeMarker;
 
 $(function(){
   var loadQueue = new LoadChain();
@@ -85,31 +85,32 @@ $(function(){
     loadQueue.start();
   });
 
-  $('#gxp-select').click(function(){
-    $('#gxp-modal').modal('show');
-    map = L.map('node-map').setView([-41.3, 174.8], 10);
+  map = L.map('node-map').setView([-41.3, 174.8], 10);
 
-    // create the tile layer with correct attribution
-    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-    var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 18, attribution: osmAttrib});
-    osm.addTo(map);
+  // create the tile layer with correct attribution
+  var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+  var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 18, attribution: osmAttrib});
+  osm.addTo(map);
 
-    $.each(NODES, function(i, node) {
-      if(!node.location) return;
-      var marker = L.marker(node.location).addTo(map).bindPopup("<div class='node-selection'><strong>" + node.name + "</strong>" +
-          "<p>You may select one of the following nodes at this location:</p>" +
-          "<ul>" + node.codes.map(function(n) {
-            var voltage = parseInt(n.substring(3,6));
-            return "<li><a href='/?node=" + n + "'>" + n + "</a> (" + voltage + "kv)</li>"; }).join("\n") + "</ul></div>");
-      marker.on('mouseover', function (e) {
-        this.openPopup();
-      });
-    })
-
+  $.each(NODES, function(i, node) {
+    if(!node.location) return;
+    var marker = L.marker(node.location, { title: node.name }).addTo(map).bindPopup("<div class='node-selection'><strong>" + node.name + "</strong>" +
+        "<p>You may select one of the following nodes at this location:</p>" +
+        "<ul>" + node.codes.map(function(n) {
+          var voltage = parseInt(n.substring(3,6));
+          return "<li><a href='/?node=" + n + "'>" + n + "</a> (" + voltage + "kv) " + (n == NODE ? " - <strong>selected</strong>" : "") + "</li>"; }).join("\n") + "</ul></div>");
+    if(node.codes.includes(NODE)) currentNodeMarker = marker;
   });
 
-  $('#gxp-modal').on('shown.bs.modal', function () { map.invalidateSize(); });
+  $('#gxp-select').click(function(){
+    $('#gxp-modal').modal('show');
+  });
+
+  $('#gxp-modal').on('shown.bs.modal', function () {
+    map.invalidateSize();
+    currentNodeMarker.openPopup();
+  });
 
   $('input[name="display_value"]').change(function(){
     display_value = $(this).val();
