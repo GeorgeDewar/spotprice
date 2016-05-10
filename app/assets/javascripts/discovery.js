@@ -208,10 +208,21 @@ function buildTimeChart() {
 }
 
 function buildDateChart() {
+  var from = new Date(FROM);
+  from.setHours(0);
+  from.setMinutes(0);
+  from.setSeconds(0);
+  from.setMilliseconds(0);
+  var to = new Date(TO);
+  to.setHours(0);
+  to.setMinutes(0);
+  to.setSeconds(0);
+  to.setMilliseconds(0);
+  to.setDate(to.getDate() + 1);
   charts.date = dc.lineChart('#price_by_dom_chart')
     .height(160)
     .width($('#price_by_dom_chart').width())
-    .x(d3.time.scale().domain([new Date(2015,1,1), new Date(2016,1,0)]))
+    .x(d3.time.scale().domain([from, to]))
     .round(d3.time.day.round)
     .renderArea(true)
     .brushOn(true)
