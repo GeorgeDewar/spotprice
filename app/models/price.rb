@@ -14,7 +14,7 @@ class Price < ActiveRecord::Base
 
   # Fetch a month's worth of prices from the EMI website (e.g. 201602)
   def self.fetch_month(month_code)
-    url = "http://www.emi.ea.govt.nz/Datasets/download?directory=%2FDatasets%2FWholesale%2FFinal_pricing%2FFinal_prices%2F#{month_code}_Final_prices.csv"
+    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/Final_pricing/Final_prices/#{month_code}_Final_prices.csv"
     response = HTTParty.get url
 
     i = 0
