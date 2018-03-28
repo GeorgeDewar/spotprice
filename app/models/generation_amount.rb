@@ -47,7 +47,7 @@ class GenerationAmount < ActiveRecord::Base
 
         (1..48).each do |j|
           begin
-            if line["TP#{j}"].strip.blank?
+            if line["TP#{j}"]&.strip.blank?
               puts "No data for line #{i}, period #{j}"
             else
               batch << GenerationAmount.new(generator_id: generator_id, node_id: node_id, network_code: line["Nwk_Code"],
@@ -55,6 +55,7 @@ class GenerationAmount < ActiveRecord::Base
             end
           rescue => e
             puts "Error occurred on line #{i}, period #{j}"
+            puts line
             raise e
           end
           if batch.size % batch_size == 0
