@@ -18,6 +18,10 @@ class GenerationAmount < ActiveRecord::Base
   def self.fetch_month(month_code)
     url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/#{month_code}_Generation_MD.csv"
     response = HTTParty.get url
+    if response.code != 200
+      puts "Error #{response.code} from server while fetching generation data for #{month_code}"
+      return
+    end
 
     i = 0
     batch = []
@@ -51,7 +55,7 @@ class GenerationAmount < ActiveRecord::Base
               puts "No data for line #{i}, period #{j}"
             else
               batch << GenerationAmount.new(generator_id: generator_id, node_id: node_id, network_code: line["Nwk_Code"],
-                                            date: Date.parse(line["Trading_date"]), period: j, quantity: line["TP#{j}"])
+                                            date: Date.parse(line["Trading_Date"]), period: j, quantity: line["TP#{j}"])
             end
           rescue => e
             puts "Error occurred on line #{i}, period #{j}"

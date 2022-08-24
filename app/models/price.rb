@@ -14,8 +14,12 @@ class Price < ActiveRecord::Base
 
   # Fetch a month's worth of prices from the EMI website (e.g. 201602)
   def self.fetch_month(month_code)
-    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/Final_pricing/Final_prices/#{month_code}_Final_prices.csv"
+    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/FinalPricing/EnergyPrices/ByMonth/#{month_code}_FinalEnergyPrices.csv"
     response = HTTParty.get url
+    if response.code != 200
+      puts "Error #{response.code} from server while fetching prices for #{month_code}"
+      return
+    end
 
     i = 0
     batch = []
@@ -27,13 +31,13 @@ class Price < ActiveRecord::Base
       CSV.parse(response.body, headers: true) do |line|
         i += 1
         puts i if i % 1000 == 0
-        node_id = nodes[line["Node"]]
+        node_id = nodes[line["PointOfConnection"]]
         if !node_id
-          puts "Node #{line["Node"]} not found, creating..."
-          node_id = Node.create!(code: line["Node"]).id
-          nodes[line["Node"]] = node_id
+          puts "Node #{line["PointOfConnection"]} not found, creating..."
+          node_id = Node.create!(code: line["PointOfConnection"]).id
+          nodes[line["PointOfConnection"]] = node_id
         end
-        batch << Price.new(node_id: node_id, date: Date.parse(line["Trading_date"]), period: line["Trading_period"], price: line["Price"])
+        batch << Price.new(node_id: node_id, date: Date.parse(line["TradingDate"]), period: line["TradingPeriod"], price: line["DollarsPerMegawattHour"])
         if batch.size % batch_size == 0
           Price.import batch
           batch = []
