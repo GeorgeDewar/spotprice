@@ -12,12 +12,12 @@
 class Price < ActiveRecord::Base
   belongs_to :node
 
-  # Fetch a month's worth of prices from the EMI website (e.g. 201602)
-  def self.fetch_month(month_code)
-    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/FinalPricing/EnergyPrices/ByMonth/#{month_code}_FinalEnergyPrices.csv"
+  # Fetch a day's worth of prices from the EMI website (e.g. 20220823)
+  def self.fetch_day(date)
+    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/FinalPricing/EnergyPrices/#{date}_FinalEnergyPrices.csv"
     response = HTTParty.get url
     if response.code != 200
-      puts "Error #{response.code} from server while fetching prices for #{month_code}"
+      puts "Error #{response.code} from server while fetching prices for #{date} from #{url}"
       return
     end
 
