@@ -14,7 +14,7 @@ class Price < ActiveRecord::Base
 
   # Fetch a month's worth of prices from the EMI website (e.g. 202208)
   def self.fetch_month(month_code)
-    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/FinalPricing/EnergyPrices/ByMonth/#{month_code}_FinalEnergyPrices.csv"
+    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/DispatchAndPricing/FinalEnergyPrices/ByMonth/#{month_code}_FinalEnergyPrices.csv"
     response = HTTParty.get url
     if response.code != 200
       puts "Error #{response.code} from server while fetching prices for #{month_code} from #{url}"
@@ -26,7 +26,7 @@ class Price < ActiveRecord::Base
 
   # Fetch a day's worth of prices from the EMI website (e.g. 20220823)
   def self.fetch_day(day_code)
-    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/FinalPricing/EnergyPrices/#{day_code}_FinalEnergyPrices.csv"
+    url = "https://www.emi.ea.govt.nz/Wholesale/Datasets/DispatchAndPricing/FinalEnergyPrices/#{day_code}_FinalEnergyPrices.csv"
     response = HTTParty.get url
     if response.code != 200
       puts "Error #{response.code} from server while fetching prices for #{day_code} from #{url}"
