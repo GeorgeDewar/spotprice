@@ -13,6 +13,6 @@ RUN bundle install --without development test
 COPY . /usr/src/app
 
 ENV RAILS_ENV=production
-RUN rake assets:precompile
+RUN SECRET_KEY_BASE=dummy rake assets:precompile
 
 CMD rails s
