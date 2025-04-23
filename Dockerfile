@@ -15,4 +15,5 @@ COPY . /usr/src/app
 ENV RAILS_ENV=production
 RUN SECRET_KEY_BASE=dummy rake assets:precompile
 
-CMD rails s
+ENTRYPOINT ["./docker/entrypoint.sh"]
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
